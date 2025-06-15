@@ -28,7 +28,7 @@ func DeclareAndBind(
 		return &amqp.Channel{}, amqp.Queue{}, errors.New("couldnt open channel on conn")
 	}
 
-	queue, err := ch.QueueDeclare(queueName, simpleQueueType == int(SimpleQueueDurable), simpleQueueType == 0, simpleQueueType == 0, false, nil)
+	queue, err := ch.QueueDeclare(queueName, simpleQueueType == int(SimpleQueueDurable), simpleQueueType == int(SimpleQueueTransient), simpleQueueType == int(SimpleQueueTransient), false, nil)
 
 	if err != nil {
 		return &amqp.Channel{}, amqp.Queue{}, errors.New("couldnt create queue")

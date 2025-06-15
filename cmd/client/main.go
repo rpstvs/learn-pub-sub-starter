@@ -29,10 +29,47 @@ func main() {
 	}
 
 	fmt.Printf("Queue %v declared and bound! \n", queue.Name)
+
+	gs := gamelogic.NewGameState(username)
 	signalChan := make(chan os.Signal, 1)
 
 	signal.Notify(signalChan, os.Interrupt)
 
 	<-signalChan
 	fmt.Println("Rabbit mq closed conn")
+
+	for {
+		commands := gamelogic.GetInput()
+
+		if len(commands) == 0 {
+			continue
+		}
+
+		switch commands[0] {
+		case "spawn":
+			err = gs.CommandSpawn(commands)
+
+			if err != nil {
+				log.Println(err)
+			}
+		case "move":
+			_, err = gs.CommandMove(commands)
+
+			if err != nil {
+				log.Println(err)
+			}
+		case "status":
+			gs.CommandStatus()
+		case "help":
+			gamelogic.PrintClientHelp()
+		case "spam":
+			log.Println("Spamming not allowed")
+		case "quit":
+			gamelogic.PrintQuit()
+			return
+		default:
+			log.Println("command not valid")
+		}
+
+	}
 }
