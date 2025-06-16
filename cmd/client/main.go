@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/signal"
 
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/gamelogic"
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/pubsub"
@@ -28,15 +26,15 @@ func main() {
 		log.Fatal("couldnt declare or bind")
 	}
 
+	_, _, err = pubsub.DeclareAndBind(conn, routing.ExchangePerilTopic, routing.GameLogSlug, routing.GameLogSlug+"."+"*", int(pubsub.SimpleQueueDurable))
+
+	if err != nil {
+		log.Fatal("couldnt declare queue for gamelog")
+	}
+
 	fmt.Printf("Queue %v declared and bound! \n", queue.Name)
 
 	gs := gamelogic.NewGameState(username)
-	signalChan := make(chan os.Signal, 1)
-
-	signal.Notify(signalChan, os.Interrupt)
-
-	<-signalChan
-	fmt.Println("Rabbit mq closed conn")
 
 	for {
 		commands := gamelogic.GetInput()
