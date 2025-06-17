@@ -36,6 +36,8 @@ func main() {
 
 	gs := gamelogic.NewGameState(username)
 
+	pubsub.SubscribeJSON(conn, routing.ExchangePerilDirect, routing.PauseKey+"."+username, routing.PauseKey, int(pubsub.SimpleQueueTransient), handlerPause(gs))
+
 	for {
 		commands := gamelogic.GetInput()
 
@@ -69,5 +71,12 @@ func main() {
 			log.Println("command not valid")
 		}
 
+	}
+}
+
+func handlerPause(gs *gamelogic.GameState) func(routing.PlayingState) {
+	return func(ps routing.PlayingState) {
+		defer fmt.Print("> ")
+		gs.HandlePause(ps)
 	}
 }

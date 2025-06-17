@@ -72,7 +72,7 @@ func SubscribeJSON[T any](
 		for msg := range delivery {
 			var data T
 
-			err = json.Unmarshal(msg.Body, data)
+			err = json.Unmarshal(msg.Body, &data)
 
 			if err != nil {
 				log.Println("error decoding message body")
