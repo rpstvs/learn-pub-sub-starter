@@ -26,15 +26,13 @@ func main() {
 	}
 	username, _ := gamelogic.ClientWelcome()
 
-	fmt.Printf("Queue %v declared and bound! \n")
-
 	gs := gamelogic.NewGameState(username)
 
 	err = pubsub.SubscribeJSON(conn, routing.ExchangePerilDirect, routing.PauseKey+"."+username, routing.PauseKey, int(pubsub.SimpleQueueTransient), handlerPause(gs))
 	if err != nil {
 		log.Fatal("couldnt subscribe to pause queue")
 	}
-	err = pubsub.SubscribeJSON(conn, routing.ExchangePerilTopic, routing.ArmyMovesPrefix+"."+username, routing.ArmyMovesPrefix+".*", int(pubsub.SimpleQueueTransient), handlerMoves(gs))
+	err = pubsub.SubscribeJSON(conn, routing.ExchangePerilTopic, routing.ArmyMovesPrefix+"."+gs.GetUsername(), routing.ArmyMovesPrefix+".*", int(pubsub.SimpleQueueTransient), handlerMoves(gs))
 
 	if err != nil {
 		log.Fatal("couldnt subscribe to army move queue")
