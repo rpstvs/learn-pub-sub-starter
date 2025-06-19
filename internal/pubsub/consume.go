@@ -69,6 +69,7 @@ func SubscribeJSON[T any](
 	}
 
 	go func() {
+		defer ch.Close()
 		for msg := range delivery {
 			var data T
 
