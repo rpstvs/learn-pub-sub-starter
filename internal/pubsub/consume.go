@@ -27,7 +27,7 @@ func DeclareAndBind(
 	exchange,
 	queueName,
 	key string,
-	simpleQueueType int, // an enum to represent "durable" or "transient"
+	queueType SimpleQueueType, // an enum to represent "durable" or "transient"
 ) (*amqp.Channel, amqp.Queue, error) {
 
 	ch, err := conn.Channel()
@@ -36,7 +36,9 @@ func DeclareAndBind(
 		return &amqp.Channel{}, amqp.Queue{}, errors.New("couldnt open channel on conn")
 	}
 
-	queue, err := ch.QueueDeclare(queueName, simpleQueueType == int(SimpleQueueDurable), simpleQueueType == int(SimpleQueueTransient), simpleQueueType == int(SimpleQueueTransient), false, nil)
+	queue, err := ch.QueueDeclare(queueName, queueType == SimpleQueueDurable, queueType == SimpleQueueTransient, queueType == SimpleQueueTransient, false, amqp.Table{
+		"x-dead-letter-exchange": "peril_dlx",
+	})
 
 	if err != nil {
 		return &amqp.Channel{}, amqp.Queue{}, errors.New("couldnt create queue")
@@ -57,7 +59,7 @@ func SubscribeJSON[T any](
 	exchange,
 	queueName,
 	key string,
-	simpleQueueType int, // an enum to represent "durable" or "transient"
+	simpleQueueType SimpleQueueType, // an enum to represent "durable" or "transient"
 	handler func(T) Acktype,
 ) error {
 	ch, queue, err := DeclareAndBind(conn, exchange, queueName, key, simpleQueueType)
