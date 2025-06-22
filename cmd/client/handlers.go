@@ -28,7 +28,7 @@ func handlerMoves(gs *gamelogic.GameState, ch *amqp.Channel) func(gamelogic.Army
 			if err != nil {
 				return pubsub.NackRequeue
 			}
-			return pubsub.NackRequeue
+			return pubsub.Ack
 
 		}
 		fmt.Println("Move not known")
