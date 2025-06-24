@@ -38,7 +38,7 @@ func main() {
 		log.Fatal("couldnt subscribe to army move queue")
 	}
 
-	err = pubsub.SubscribeJSON(conn, routing.ExchangePerilTopic, routing.WarRecognitionsPrefix, routing.WarRecognitionsPrefix+".*", pubsub.SimpleQueueDurable, handleWar(gs))
+	err = pubsub.SubscribeJSON(conn, routing.ExchangePerilTopic, routing.WarRecognitionsPrefix, routing.WarRecognitionsPrefix+".*", pubsub.SimpleQueueDurable, handleWar(gs, publishCh))
 
 	if err != nil {
 		log.Fatal("couldnt subscribe to War")
