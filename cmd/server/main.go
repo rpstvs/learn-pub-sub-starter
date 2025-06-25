@@ -40,17 +40,12 @@ func main() {
 	}
 	fmt.Println("Pause message sent!")
 
-	_, queue, err := pubsub.DeclareAndBind(
-		conn,
-		routing.ExchangePerilTopic,
-		routing.GameLogSlug,
-		routing.GameLogSlug+".*",
-		pubsub.SimpleQueueDurable,
-	)
+	err = pubsub.SubscribeGob(conn, routing.ExchangePerilTopic, routing.GameLogSlug, routing.GameLogSlug+".*", pubsub.SimpleQueueDurable, handlerLog())
+
 	if err != nil {
-		log.Fatalf("could not subscribe to pause: %v", err)
+		fmt.Println("couldnt subscribe to game log exchange")
 	}
-	fmt.Printf("Queue %v declared and bound!\n", queue.Name)
+	fmt.Printf("Queue declared and bound!\n")
 
 	for {
 		commands := gamelogic.GetInput()
