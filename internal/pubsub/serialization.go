@@ -11,7 +11,7 @@ import (
 func PublishGob[T any](ch *amqp.Channel, exchange, key string, val T) error {
 	buffer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&buffer)
-	err := encoder.Encode(&val)
+	err := encoder.Encode(val)
 	if err != nil {
 		return err
 	}

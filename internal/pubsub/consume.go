@@ -77,17 +77,24 @@ func SubscribeGob[T any](
 	exchange,
 	queueName,
 	key string,
-	simpleQueueType SimpleQueueType,
+	queueType SimpleQueueType,
 	handler func(T) Acktype,
 ) error {
-
-	return subscribe(conn, exchange, queueName, key, simpleQueueType, handler, func(b []byte) (T, error) {
-		var out T
-		buffer := bytes.NewReader(b)
-		decoder := gob.NewDecoder(buffer)
-		err := decoder.Decode(&out)
-		return out, err
-	})
+	return subscribe[T](
+		conn,
+		exchange,
+		queueName,
+		key,
+		queueType,
+		handler,
+		func(data []byte) (T, error) {
+			buffer := bytes.NewBuffer(data)
+			decoder := gob.NewDecoder(buffer)
+			var target T
+			err := decoder.Decode(&target)
+			return target, err
+		},
+	)
 }
 
 func subscribe[T any](
