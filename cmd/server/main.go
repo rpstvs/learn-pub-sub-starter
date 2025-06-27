@@ -40,7 +40,10 @@ func main() {
 	}
 	fmt.Println("Pause message sent!")
 
-	err = pubsub.SubscribeGob(conn, routing.ExchangePerilTopic, routing.GameLogSlug, routing.GameLogSlug+".*", pubsub.SimpleQueueDurable, handlerLog())
+	pubsub.SubscribeGob(conn, routing.ExchangePerilTopic, routing.GameLogSlug, routing.GameLogSlug+".*", pubsub.SimpleQueueDurable, handlerLog())
+	if err != nil {
+		log.Fatalf("could not starting consuming logs: %v", err)
+	}
 
 	if err != nil {
 		fmt.Println("couldnt subscribe to game log exchange")

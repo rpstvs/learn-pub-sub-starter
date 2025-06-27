@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/gamelogic"
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/pubsub"
@@ -62,7 +63,11 @@ func handleWar(gs *gamelogic.GameState, ch *amqp.Channel) func(war gamelogic.Rec
 			return pubsub.Ack
 		case gamelogic.WarOutcomeDraw:
 			log := fmt.Sprintf("A war between %s and %s resulted in a draw", winner, loser)
-			err := pubsub.PublishGob(ch, routing.GameLogSlug, routing.GameLogSlug+"."+war.Attacker.Username, log)
+			err := pubsub.PublishGob(ch, routing.GameLogSlug, routing.GameLogSlug+"."+war.Attacker.Username, routing.GameLog{
+				CurrentTime: time.Now(),
+				Message:     log,
+				Username:    gs.GetUsername(),
+			})
 			if err != nil {
 				return pubsub.NackRequeue
 			}
