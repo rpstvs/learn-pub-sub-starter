@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/gamelogic"
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/pubsub"
@@ -82,7 +83,11 @@ func main() {
 			str := gamelogic.GetMaliciousLog()
 
 			for i := 0; i < n; i++ {
-				err := pubsub.PublishGob(publishCh, routing.ExchangePerilTopic, routing.GameLogSlug+"."+gs.GetUsername(), str)
+				err := pubsub.PublishGob(publishCh, routing.ExchangePerilTopic, routing.GameLogSlug+"."+gs.GetUsername(), routing.GameLog{
+					Username:    gs.GetUsername(),
+					Message:     str,
+					CurrentTime: time.Now(),
+				})
 				if err != nil {
 					fmt.Println("Couldnt publish malicious log")
 					continue

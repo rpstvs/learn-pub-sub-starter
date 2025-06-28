@@ -48,7 +48,11 @@ func handleWar(gs *gamelogic.GameState, ch *amqp.Channel) func(war gamelogic.Rec
 			return pubsub.NackDiscard
 		case gamelogic.WarOutcomeOpponentWon:
 			log := fmt.Sprintf("%s won a war against %s", winner, loser)
-			err := pubsub.PublishGob(ch, routing.ExchangePerilTopic, routing.GameLogSlug+"."+war.Attacker.Username, log)
+			err := pubsub.PublishGob(ch, routing.ExchangePerilTopic, routing.GameLogSlug+"."+war.Attacker.Username, routing.GameLog{
+				CurrentTime: time.Now(),
+				Message:     log,
+				Username:    gs.GetUsername(),
+			})
 			if err != nil {
 				return pubsub.NackRequeue
 			}
@@ -56,7 +60,11 @@ func handleWar(gs *gamelogic.GameState, ch *amqp.Channel) func(war gamelogic.Rec
 		case gamelogic.WarOutcomeYouWon:
 
 			log := fmt.Sprintf("%s won a war against %s", winner, loser)
-			err := pubsub.PublishGob(ch, routing.ExchangePerilTopic, routing.GameLogSlug+"."+war.Attacker.Username, log)
+			err := pubsub.PublishGob(ch, routing.ExchangePerilTopic, routing.GameLogSlug+"."+war.Attacker.Username, routing.GameLog{
+				CurrentTime: time.Now(),
+				Message:     log,
+				Username:    gs.GetUsername(),
+			})
 			if err != nil {
 				return pubsub.NackRequeue
 			}
